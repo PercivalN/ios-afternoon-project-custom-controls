@@ -13,6 +13,7 @@ class CustomControl: UIControl {
 
 	// What does this mean that this is API facing
 	var value: Int = 1
+	let label = UILabel()
 	private let componentDimension: CGFloat = 40.0
 	private let componentCount = 5
 	private let componentActiveColor: UIColor = .black
@@ -27,27 +28,30 @@ class CustomControl: UIControl {
 	required init?(coder aCoder: NSCoder) {
 		super.init(coder: aCoder)
 		setupStars()
-
 	}
 
 	func setupStars() {
 
 		for i in 1...5 {
 
-			let label = UILabel()
-			let spacing: Int = 8
-			//let star = "\u{2729}"
-			addSubview(label)
+			//let label = UILabel()
 			components.append(label)
+
+			let star = "\u{2729}"
+
+			addSubview(label)
+
 			label.tag = i
 			label.font = UIFont.boldSystemFont(ofSize: 32)
-			label.text = "✮"
+			label.text = star
+			//label.text = "✮"
 			label.textAlignment = .center
 
 			let offset = CGFloat(i - 1) * componentDimension + CGFloat(i) * 8.0
 			let origin = CGPoint(x: offset, y: 0)
 			let starSize = CGSize(width: componentDimension, height: componentDimension)
 			label.frame = CGRect(origin: origin, size: starSize)
+
 
 //			if label.tag > 1 {
 //				label.frame = CGRect(x: componentDimension + CGFloat(i * spacing), y: bounds.midY, width: componentDimension, height: componentDimension)
@@ -57,6 +61,14 @@ class CustomControl: UIControl {
 
 		}
 	}
+
+	// This func is called by a built-in function that is part of UIControl
+	// Nothing has to be done
+
+	func fillStars(for location: CGPoint) -> UIColor {
+		let labelArea = CGPoint(x: bounds.minX, y: bounds.minY)
+	}
+
 
 	override var intrinsicContentSize: CGSize {
 		let componentsWidth = CGFloat(componentCount) * componentDimension
@@ -71,7 +83,8 @@ class CustomControl: UIControl {
 		let touchPoint = touch.location(in: self)
 
 		if bounds.contains(touchPoint) {
-			selectedColor = colorWheel.color(for: touchPoint)
+
+			label.textColor = componentActiveColor(for: touchPoint)
 			sendActions(for: .valueChanged)
 		}
 		sendActions(for: .touchDown)
